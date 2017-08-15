@@ -21,6 +21,7 @@ namespace ScarabolMods
     public static void OnAssemblyLoaded(string path)
     {
       AssetsDirectory = Path.Combine(Path.GetDirectoryName(path), "assets");
+      ModLocalizationHelper.localize(Path.Combine(AssetsDirectory, "localization"), "", false);
     }
 
     [ModLoader.ModCallback(ModLoader.EModCallbackType.AfterStartup, "scarabol.mages.registercallbacks")]
