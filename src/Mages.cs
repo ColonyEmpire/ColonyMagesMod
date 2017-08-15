@@ -52,6 +52,17 @@ namespace ScarabolMods
 
     public override int MaxRecipeCraftsPerHaul { get { return 7; } }
 
+    public override List<string> GetCraftingLimitsTriggers ()
+    {
+      return new List<string>()
+      {
+        "mods.scarabol.notenoughblocks.ColonyEmpire.altarx+",
+        "mods.scarabol.notenoughblocks.ColonyEmpire.altarx-",
+        "mods.scarabol.notenoughblocks.ColonyEmpire.altarz+",
+        "mods.scarabol.notenoughblocks.ColonyEmpire.altarz-"
+      };
+    }
+
     // TOOD add job tool?
 //    public override InventoryItem RecruitementItem { get { return new InventoryItem(ItemTypes.IndexLookup.GetIndex("mods.scarabol.construction.buildtool"), 1); } }
 
