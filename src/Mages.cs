@@ -27,7 +27,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback(ModLoader.EModCallbackType.AfterStartup, "scarabol.mages.registercallbacks")]
     public static void AfterStartup()
     {
-      Pipliz.Log.Write("Loaded Mages Mod 1.2 by Scarabol");
+      Pipliz.Log.Write("Loaded Mages Mod 1.3 by Scarabol");
     }
 
     [ModLoader.ModCallback(ModLoader.EModCallbackType.AfterDefiningNPCTypes, "scarabol.mages.registerjobs")]
