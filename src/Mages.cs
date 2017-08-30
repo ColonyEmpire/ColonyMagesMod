@@ -36,13 +36,6 @@ namespace ScarabolMods
     {
       BlockJobManagerTracker.Register<MageJob>(JOB_ITEM_KEY);
     }
-
-    [ModLoader.ModCallback(ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.mages.loadrecipes")]
-    [ModLoader.ModCallbackProvidesFor("pipliz.apiprovider.registerrecipes")]
-    public static void AfterItemTypesDefined()
-    {
-      RecipeManager.LoadRecipes("scarabol.mage", Path.Combine(AssetsDirectory, "craftingmagic.json"));
-    }
   }
 
   public class MageJob : CraftingJobBase, IBlockJobBase, INPCTypeDefiner
@@ -53,19 +46,38 @@ namespace ScarabolMods
 
     public override int MaxRecipeCraftsPerHaul { get { return 7; } }
 
-    public override List<string> GetCraftingLimitsTriggers ()
+    public override void OnNPCDoJob (ref NPCBase.NPCState state)
     {
-      return new List<string>()
-      {
-        "mods.scarabol.notenoughblocks.ColonyEmpire.altarx+",
-        "mods.scarabol.notenoughblocks.ColonyEmpire.altarx-",
-        "mods.scarabol.notenoughblocks.ColonyEmpire.altarz+",
-        "mods.scarabol.notenoughblocks.ColonyEmpire.altarz-"
-      };
+      state.JobIsDone = true;
+      usedNPC.LookAt(position.Vector);
+      if (!state.Inventory.IsEmpty) {
+        usedNPC.Inventory.Dump(blockInventory);
+      }
+      if (recipesToCraft > 0) {
+        ushort manatype = ItemTypes.IndexLookup.GetIndex("mods.scarabol.notenoughblocks.ColonyEmpire.mana");
+        blockInventory.Add(new InventoryItem(manatype, 1));
+        state.SetIndicator(NPCIndicatorType.Crafted, TimeBetweenJobs, manatype);
+        state.JobIsDone = false;
+        recipesToCraft--;
+        OnRecipeCrafted();
+      } else {
+        recipesToCraft = 0;
+        blockInventory.Dump(usedNPC.Inventory);
+        shouldTakeItems = true;
+        OverrideCooldown(0.1);
+      }
     }
 
-    // TOOD add job tool?
-//    public override InventoryItem RecruitementItem { get { return new InventoryItem(ItemTypes.IndexLookup.GetIndex("mods.scarabol.construction.buildtool"), 1); } }
+    public override void OnNPCDoStockpile (ref NPCBase.NPCState state)
+    {
+      state.Inventory.TryDump(usedNPC.Colony.UsedStockpile);
+      state.JobIsDone = true;
+      if (shouldTakeItems) {
+        shouldTakeItems = false;
+        recipesToCraft = MaxRecipeCraftsPerHaul;
+      }
+      OverrideCooldown(0.1);
+    }
 
     NPCTypeSettings INPCTypeDefiner.GetNPCTypeDefinition ()
     {
@@ -77,5 +89,4 @@ namespace ScarabolMods
       return def;
     }
   }
-
 }
